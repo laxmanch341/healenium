@@ -1,0 +1,58 @@
+[
+  {
+    "healed": "input#phoneNumber",
+    "original": "//input[@id='mobile']",
+    "confidence": 0.7883116883116884,
+    "testName": "TestWithHealenium",
+    "status": "success",
+    "timestamp": "2025-07-16T11:27:01.071312100Z"
+  },
+  {
+    "healed": "select#stateName",
+    "original": "//select[@id='state']",
+    "confidence": 0.7990476190476191,
+    "testName": "TestWithHealenium",
+    "status": "success",
+    "timestamp": "2025-07-16T11:27:12.118477500Z"
+  },
+  {
+    "healed": "select#stateName",
+    "original": "//select[@id='state']",
+    "confidence": 0.7923809523809523,
+    "testName": "TestWithHealenium",
+    "status": "success",
+    "timestamp": "2025-07-16T11:27:22.689660100Z"
+  },
+  {
+    "healed": "select#stateName",
+    "original": "//select[@id='state']",
+    "confidence": 0.7923809523809523,
+    "testName": "TestWithHealenium",
+    "status": "success",
+    "timestamp": "2025-07-16T11:27:33.348377Z"
+  },
+  {
+    "healed": "select#stateName",
+    "original": "//select[@id='state']",
+    "confidence": 0.7923809523809523,
+    "testName": "TestWithHealenium",
+    "status": "success",
+    "timestamp": "2025-07-16T11:27:43.846141Z"
+  },
+  {
+    "healed": "textarea#remarks",
+    "original": "//textarea[@id='message']",
+    "confidence": 0.7959183673469388,
+    "testName": "TestWithHealenium",
+    "status": "success",
+    "timestamp": "2025-07-16T11:27:54.681822600Z"
+  },
+  {
+    "healed": "textarea#remarks",
+    "original": "//textarea[@id='message']",
+    "confidence": 0.7910204081632652,
+    "testName": "TestWithHealenium",
+    "status": "success",
+    "timestamp": "2025-07-16T11:28:05.545495300Z"
+  }
+]

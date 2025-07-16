@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healenium Impact Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #4e73df;
+            --success-color: #1cc88a;
+            --danger-color: #e74a3b;
+            --warning-color: #f6c23e;
+            --light-color: #f8f9fc;
+            --dark-color: #5a5c69;
+            --original-color: #6c757d;
+        }
+        
+        body {
+            background-color: #f8f9fc;
+            font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: #333;
+        }
+        
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 1.5rem;
+            border: none;
+        }
+        
+        .card-header {
+            padding: 1rem 1.5rem;
+            background: linear-gradient(120deg, #f8f9fc, #e9ecef);
+            border-bottom: 1px solid #e3e6f0;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .view-container {
+            background: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e3e6f0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .view-indicator {
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 1rem;
+            min-width: 140px;
+            text-align: center;
+        }
+        
+        .view-original {
+            background: linear-gradient(120deg, var(--original-color), #5a6268);
+            color: white;
+        }
+        
+        .view-healed {
+            background: linear-gradient(120deg, var(--success-color), #17a673);
+            color: white;
+        }
+        
+        .metric-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            height: 100%;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e3e6f0;
+        }
+        
+        .metric-title {
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 10px;
+            font-size: 1.05rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin: 15px 0;
+        }
+        
+        .metric-detail {
+            font-size: 0.95rem;
+            color: #6c757d;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+        
+        .context-section {
+            background: linear-gradient(120deg, #f0f5ff, #e6eeff);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-left: 5px solid var(--primary-color);
+        }
+        
+        .context-title {
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+            font-size: 1.4rem;
+        }
+        
+        .context-description {
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 2rem 0;
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-top: 2rem;
+            border-top: 1px solid #eaecef;
+        }
+        
+        /* View-specific styles */
+        .healed-only {
+            display: none;
+        }
+        
+        .healed-view .healed-only {
+            display: block;
+        }
+        
+        .healed-view .original-only {
+            display: none;
+        }
+        
+        .original-view .original-only {
+            display: block;
+        }
+        
+        .original-view .healed-only {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid px-4 mt-4">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="mb-0" style="font-weight:800;color:#2c3e50;">
+                    <span style="background:linear-gradient(90deg, #4e73df, #6f42c1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
+                        Healenium Impact Dashboard
+                    </span>
+                </h1>
+                <div class="text-muted">Generated on <span id="current-date"></span></div>
+            </div>
+            <div class="view-container">
+                <span class="toggle-label" style="font-weight:700;">Without Healenium</span>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="healenium-toggle" style="width: 3.5rem; height: 1.8rem;">
+                </div>
+                <span class="toggle-label" style="font-weight:700;">With Healenium</span>
+                <div class="view-indicator view-healed" id="view-indicator">Healed View</div>
+            </div>
+        </div>
+        
+        <!-- Contextual Information -->
+        <div class="context-section">
+            <div class="context-title healed-only">With Healenium Analysis</div>
+            <div class="context-title original-only">Without Healenium Analysis</div>
+            <div class="context-description healed-only">
+                <i class="fas fa-heartbeat"></i> This view shows the impact of Healenium's self-healing capabilities. 
+                See how many locators were automatically healed, with confidence scores showing the reliability of each fix.
+            </div>
+            <div class="context-description original-only">
+                <i class="fas fa-exclamation-triangle"></i> This view shows the original test failures without healing. 
+                Analyze the failure patterns and see how much maintenance effort Healenium could save.
+            </div>
+        </div>
+        
+        <!-- Healed View Metrics -->
+        <div class="healed-only">
+            <div class="row mb-4">
+                <div class="col-md-4 mb-4">
+                    <div class="metric-card">
+                        <div class="metric-title">
+                            <i class="fas fa-stethoscope"></i> Healing Success Rate
+                        </div>
+                        <div class="metric-value" id="healing-success-rate">67%</div>
+                        <div class="metric-detail">4 of 6 locators healed</div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="metric-card">
+                        <div class="metric-title">
+                            <i class="fas fa-shield-alt"></i> Avg. Confidence
+                        </div>
+                        <div class="metric-value" id="avg-confidence">79%</div>
+                        <div class="metric-detail">Accuracy of healed locators</div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="metric-card">
+                        <div class="metric-title">
+                            <i class="fas fa-bug-slash"></i> Failure Reduction
+                        </div>
+                        <div class="metric-value" id="failure-reduction">67%</div>
+                        <div class="metric-detail">4 failures prevented</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">Healing Effectiveness</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="healing-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Original View Metrics -->
+        <div class="original-only">
+            <div class="row mb-4">
+                <div class="col-md-4 mb-4">
+                    <div class="metric-card">
+                        <div class="metric-title">
+                            <i class="fas fa-times-circle"></i> Original Failures
+                        </div>
+                        <div class="metric-value" id="original-failures">6</div>
+                        <div class="metric-detail">Locators that failed</div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="metric-card">
+                        <div class="metric-title">
+                            <i class="fas fa-clock"></i> Estimated Maintenance
+                        </div>
+                        <div class="metric-value" id="maintenance-time">3.5h</div>
+                        <div class="metric-detail">Time to fix manually</div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="metric-card">
+                        <div class="metric-title">
+                            <i class="fas fa-money-bill-wave"></i> Potential Savings
+                        </div>
+                        <div class="metric-value" id="potential-savings">$280</div>
+                        <div class="metric-detail">With auto-healing</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">Failure Distribution</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="failure-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Common Metrics -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">Test Case Summary</div>
+                    <div class="card-body">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Test Case</th>
+                                    <th class="healed-only">Healed Locators</th>
+                                    <th class="healed-only">Confidence</th>
+                                    <th class="original-only">Failed Locators</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>LoginTest.validCredentials</td>
+                                    <td class="healed-only">1</td>
+                                    <td class="healed-only">
+                                        <div class="progress" style="height: 10px;">
+                                            <div class="progress-bar bg-success" style="width: 92%"></div>
+                                        </div>
+                                        92%
+                                    </td>
+                                    <td class="original-only">1</td>
+                                    <td>
+                                        <span class="badge bg-success healed-only">Healed</span>
+                                        <span class="badge bg-danger original-only">Failed</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>LoginTest.invalidCredentials</td>
+                                    <td class="healed-only">0</td>
+                                    <td class="healed-only">N/A</td>
+                                    <td class="original-only">1</td>
+                                    <td>
+                                        <span class="badge bg-danger">Failed</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>CheckoutTest.addToCart</td>
+                                    <td class="healed-only">1</td>
+                                    <td class="healed-only">
+                                        <div class="progress" style="height: 10px;">
+                                            <div class="progress-bar bg-warning" style="width: 87%"></div>
+                                        </div>
+                                        87%
+                                    </td>
+                                    <td class="original-only">1</td>
+                                    <td>
+                                        <span class="badge bg-success healed-only">Healed</span>
+                                        <span class="badge bg-danger original-only">Failed</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>CheckoutTest.proceedToPayment</td>
+                                    <td class="healed-only">0</td>
+                                    <td class="healed-only">N/A</td>
+                                    <td class="original-only">1</td>
+                                    <td>
+                                        <span class="badge bg-danger">Failed</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>ProfileTest.updateProfile</td>
+                                    <td class="healed-only">1</td>
+                                    <td class="healed-only">
+                                        <div class="progress" style="height: 10px;">
+                                            <div class="progress-bar bg-success" style="width: 95%"></div>
+                                        </div>
+                                        95%
+                                    </td>
+                                    <td class="original-only">1</td>
+                                    <td>
+                                        <span class="badge bg-success healed-only">Healed</span>
+                                        <span class="badge bg-danger original-only">Failed</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>SearchTest.searchProduct</td>
+                                    <td class="healed-only">1</td>
+                                    <td class="healed-only">
+                                        <div class="progress" style="height: 10px;">
+                                            <div class="progress-bar bg-warning" style="width: 78%"></div>
+                                        </div>
+                                        78%
+                                    </td>
+                                    <td class="original-only">1</td>
+                                    <td>
+                                        <span class="badge bg-success healed-only">Healed</span>
+                                        <span class="badge bg-danger original-only">Failed</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Business Impact -->
+        <div class="healed-only">
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">Business Impact</div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4 mb-4">
+                                    <div class="metric-card">
+                                        <div class="metric-title">
+                                            <i class="fas fa-clock"></i> Time Saved
+                                        </div>
+                                        <div class="metric-value">4.5h</div>
+                                        <div class="metric-detail">Estimated maintenance time saved</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-4">
+                                    <div class="metric-card">
+                                        <div class="metric-title">
+                                            <i class="fas fa-money-bill-wave"></i> Cost Savings
+                                        </div>
+                                        <div class="metric-value">$320</div>
+                                        <div class="metric-detail">Based on engineering time</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-4">
+                                    <div class="metric-card">
+                                        <div class="metric-title">
+                                            <i class="fas fa-rocket"></i> ROI Improvement
+                                        </div>
+                                        <div class="metric-value">42%</div>
+                                        <div class="metric-detail">Return on automation investment</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="container">
+            <p>Healenium Impact Dashboard • Data reflects your test execution results</p>
+            <p class="small">Report generated on <span id="report-date"></span></p>
+        </div>
+    </div>
+
+    <script>
+        // Set current date
+        const now = new Date();
+        document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        
+        document.getElementById('report-date').textContent = now.toLocaleDateString();
+        
+        // Initialize dashboard view
+        function initDashboard() {
+            // Set initial state
+            const showHealenium = true;
+            document.getElementById('healenium-toggle').checked = showHealenium;
+            document.body.classList.add('healed-view');
+            document.body.classList.remove('original-view');
+            
+            // Initialize charts
+            initHealingChart();
+            initFailureChart();
+            
+            // Add toggle event listener
+            document.getElementById('healenium-toggle').addEventListener('change', function() {
+                const showHealenium = this.checked;
+                
+                // Update view indicator
+                const viewIndicator = document.getElementById('view-indicator');
+                viewIndicator.textContent = showHealenium ? 'Healed View' : 'Original View';
+                viewIndicator.className = showHealenium ? 
+                    'view-indicator view-healed' : 'view-indicator view-original';
+                
+                // Update body classes
+                if (showHealenium) {
+                    document.body.classList.remove('original-view');
+                    document.body.classList.add('healed-view');
+                } else {
+                    document.body.classList.remove('healed-view');
+                    document.body.classList.add('original-view');
+                }
+            });
+        }
+        
+        // Initialize healing chart (for healed view)
+        function initHealingChart() {
+            const ctx = document.getElementById('healing-chart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Successfully Healed (67%)', 'Failed to Heal (33%)'],
+                    datasets: [{
+                        data: [4, 2],
+                        backgroundColor: ['#1cc88a', '#e74a3b'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.label}: ${context.raw} locators`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Initialize failure chart (for original view)
+        function initFailureChart() {
+            const ctx = document.getElementById('failure-chart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Login', 'Checkout', 'Profile', 'Search'],
+                    datasets: [{
+                        label: 'Failed Locators',
+                        data: [2, 2, 1, 1],
+                        backgroundColor: '#6c757d'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            },
+                            title: {
+                                display: true,
+                                text: 'Number of Failures'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Start the dashboard when the page loads
+        window.addEventListener('DOMContentLoaded', initDashboard);
+    </script>
+</body>
+</html>
