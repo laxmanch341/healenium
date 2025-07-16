@@ -1,6 +1,7 @@
 package org.modal;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.json.JSONArray;
 import org.modal.HealingRecord;
@@ -11,6 +12,7 @@ public class HealingCollector {
 
     private static final HealingCollector INSTANCE = new HealingCollector();
     private final List<HealingRecord> records = new ArrayList<>();
+    private int healedCount = 0;
 
     private HealingCollector() {}
 
@@ -20,6 +22,13 @@ public class HealingCollector {
 
     public void addRecord(HealingRecord record) {
         records.add(record);
+        if ("success".equals(record.status)) {
+            healedCount++; // Increment the global count if the healing was successful
+        }
+    }
+
+    public int getHealedCount() {
+        return healedCount;
     }
 
     public void saveToJson(String path) {
@@ -38,6 +47,14 @@ public class HealingCollector {
 
     public void clear() {
         records.clear();
+    }
+
+    public void clearRecordsForTest(String testName) {
+        records.removeIf(r -> r.testName.equals(testName));
+    }
+
+    public List<HealingRecord> getRecords() {
+        return Collections.unmodifiableList(records);
     }
 }
 
