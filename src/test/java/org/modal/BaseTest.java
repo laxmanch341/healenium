@@ -57,18 +57,26 @@ public class BaseTest {
 
         if (!healed.isEmpty()) {
             // Mark the test as healed
-            test.pass(MarkupHelper.createLabel("Test Passed after Healing", ExtentColor.GREEN));
             test.warning(MarkupHelper.createLabel("HEALED ELEMENTS", ExtentColor.ORANGE));
 
-            String[][] table = new String[ healed.size() + 1 ][3];   // +1 for header row
-            table[0] = new String[]{ "Original Locator", "Healed Locator", "Status" };
+            String[][] table = new String[ healed.size() + 1 ][4];   // +1 for header row
+            table[0] = new String[]{ "Original Locator", "Healed Locator", "Status" , "Confidence Score"};
 
             for (int i = 0; i < healed.size(); i++) {
                 HealingRecord r = healed.get(i);
-                table[i + 1] = new String[]{ r.original, r.healed, r.status };
+                table[i + 1] = new String[]{ r.original, r.healed, r.status, String.valueOf(r.confidence)};
             }
 
             test.info(MarkupHelper.createTable(table));
+        }
+        int testStatus = result.getStatus();
+
+        if(testStatus == ITestResult.SUCCESS) {
+            test.pass(MarkupHelper.createLabel("Test Passed after Healing", ExtentColor.GREEN));
+        }
+
+        else if (testStatus == ITestResult.FAILURE) {
+            test.fail(MarkupHelper.createLabel("Test Failed", ExtentColor.RED));
         }
 
         // Clear records for the current test
@@ -77,7 +85,6 @@ public class BaseTest {
 
     @AfterClass(alwaysRun = true)
     public static void tearDown() {
-        // 2. Dump full JSON and clear ThreadLocals once per class
         healingCollector.saveToJson("healing.json");
         int healed = HealingCollector.getInstance().getHealedCount();
         extent.setSystemInfo("Total Healed Locators", String.valueOf(healed));
