@@ -20,6 +20,10 @@ public class SelfHealingTest extends BaseTest {
     @Test
     public void TestWithHealenium(){
         ChromeOptions options = new ChromeOptions();
+        options.addArguments("--no-sandbox"); // Recommended for CI
+options.addArguments("--disable-dev-shm-usage"); // Recommended for Docker
+options.addArguments("--disable-gpu"); // Optional, safer for CI
+options.addArguments("--window-size=1920,1080"); // Optional but helps
         WebDriver delegate = new ChromeDriver(options);
         SelfHealingDriver driver = SelfHealingDriver.create((WebDriver) delegate);
 
@@ -38,6 +42,10 @@ public class SelfHealingTest extends BaseTest {
     public void TestWithHealenium1(){
 
         ChromeOptions options = new ChromeOptions();
+        options.addArguments("--no-sandbox"); // Recommended for CI
+options.addArguments("--disable-dev-shm-usage"); // Recommended for Docker
+options.addArguments("--disable-gpu"); // Optional, safer for CI
+options.addArguments("--window-size=1920,1080"); // Optional but helps
         String testName = new Object() {}.getClass().getEnclosingMethod().getName();
         HealingLogAppender.setTestName(testName);
         WebDriver delegate = new ChromeDriver(options);

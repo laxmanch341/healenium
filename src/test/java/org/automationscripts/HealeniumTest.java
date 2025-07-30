@@ -19,6 +19,10 @@ public class HealeniumTest extends BaseTest {
     @Test
     public void interviewPortalTest(){
         ChromeOptions options = new ChromeOptions();
+        options.addArguments("--no-sandbox"); // Recommended for CI
+options.addArguments("--disable-dev-shm-usage"); // Recommended for Docker
+options.addArguments("--disable-gpu"); // Optional, safer for CI
+options.addArguments("--window-size=1920,1080"); // Optional but helps
         WebDriver delegate = new ChromeDriver(options);
         SelfHealingDriver driver = SelfHealingDriver.create((WebDriver) delegate);
 
