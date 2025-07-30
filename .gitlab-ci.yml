@@ -33,7 +33,7 @@ healenium-tests:
     - cd infra
     - docker-compose up -d
     - sleep 10 # Wait for services to initialize
-
+    - cd ..
     # Run tests
     - mvn clean test
 
