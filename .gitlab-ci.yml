@@ -30,6 +30,7 @@ healenium-tests:
     - export CHROMEDRIVER_PATH=/usr/bin/chromedriver
   script:
     # Start Healenium services
+    - cd infra
     - docker-compose up -d
     - sleep 10 # Wait for services to initialize
 
@@ -37,6 +38,7 @@ healenium-tests:
     - mvn clean test
 
     # Stop services
+    - cd infra
     - docker-compose down
   artifacts:
     when: always
