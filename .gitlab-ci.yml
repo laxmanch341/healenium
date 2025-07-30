@@ -26,7 +26,7 @@ healenium-tests:
     - dind
   before_script:
     - apt-get update
-    - apt-get install -y docker-compose chromium chromium-driver
+    - apt-get install -y docker-compose chromium-driver
     - export CHROME_BIN=/usr/bin/chromium-browser
     - export CHROMEDRIVER_PATH=/usr/bin/chromedriver
   script:
