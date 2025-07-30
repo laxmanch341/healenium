@@ -25,7 +25,8 @@ healenium-tests:
   tags:
     - dind
   before_script:
-    - apk add --no-cache docker-compose openjdk11 maven chromium chromium-chromedriver
+    - apt-get update
+    - apt-get install -y docker-compose chromium chromium-driver
     - export CHROME_BIN=/usr/bin/chromium-browser
     - export CHROMEDRIVER_PATH=/usr/bin/chromedriver
   script:
