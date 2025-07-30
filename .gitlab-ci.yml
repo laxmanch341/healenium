@@ -14,7 +14,7 @@ services:
 
 healenium-tests:
   stage: test
-  image: maven:3.8.6-openjdk-17
+  image: maven:3.9.6-eclipse-temurin-17
   services:
     - name: docker:20.10.16-dind
       alias: docker
