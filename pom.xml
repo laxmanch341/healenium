@@ -24,9 +24,10 @@
   </properties>
 
   <dependencies>
+    <!-- Allure TestNG integration -->
     <dependency>
       <groupId>io.qameta.allure</groupId>
-      <artifactId>allure-junit5</artifactId>
+      <artifactId>allure-testng</artifactId>
       <version>${allure.version}</version>
       <scope>test</scope>
       <exclusions>
@@ -160,4 +161,5 @@
       </plugin>
     </plugins>
   </build>
+
 </project>
