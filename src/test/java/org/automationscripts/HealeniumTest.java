@@ -1,3 +1,4 @@
+import org.testng.annotations.Test;
 package org.automationscripts;
 
 import com.epam.healenium.SelfHealingDriver;
@@ -8,7 +9,6 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.pages.InterviewPage;
 import org.testng.Assert;
-import org.testng.annotations.Test;
 
 import java.time.Duration;
 import java.util.Arrays;

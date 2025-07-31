@@ -1,8 +1,0 @@
-<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<suite name="HealeniumSuite">
-  <test name="HealeniumTests">
-    <packages>
-      <package name="org.automationscripts"/>
-    </packages>
-  </test>
-</suite>

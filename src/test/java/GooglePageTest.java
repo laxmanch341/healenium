@@ -1,3 +1,4 @@
+import org.testng.annotations.Test;
 import com.epam.healenium.SelfHealingDriver;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -7,7 +8,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import java.net.MalformedURLException;
 
 public class GooglePageTest {
-
+@Test
     public static void main (String []args) throws MalformedURLException {
 
         ChromeOptions options = new ChromeOptions();
