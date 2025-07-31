@@ -2,7 +2,6 @@ package org.automationscripts;
 
 import com.aventstack.extentreports.Status;
 import com.epam.healenium.SelfHealingDriver;
-import org.junit.jupiter.api.AfterEach;
 import org.modal.BaseTest;
 import org.modal.HealingCollector;
 import org.modal.HealingLogAppender;
