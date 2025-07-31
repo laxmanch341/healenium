@@ -111,6 +111,9 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.1</version>
         <configuration>
+        <suiteXmlFiles>
+      <suiteXmlFile>testng.xml</suiteXmlFile>
+    </suiteXmlFiles>
           <source>${maven.compiler.source}</source>
           <target>${maven.compiler.target}</target>
         </configuration>
