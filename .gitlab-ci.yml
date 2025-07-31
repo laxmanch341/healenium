@@ -36,7 +36,7 @@ healenium-tests:
     - sleep 10 # Wait for services to initialize
     - cd ..
     # Run tests
-    - mvn -Dtest=org.automationscripts.HealeniumTest test
+    - mvn clean test
 
     # Stop services
     - cd infra
