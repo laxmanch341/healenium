@@ -1,6 +1,6 @@
-import org.testng.annotations.Test;
 package org.automationscripts;
 
+import org.testng.annotations.Test;
 import com.epam.healenium.SelfHealingDriver;
 import org.modal.BaseTest;
 import org.openqa.selenium.WebDriver;
