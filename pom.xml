@@ -73,7 +73,15 @@
       <artifactId>logback-classic</artifactId>
       <version>1.4.11</version>
     </dependency>
+        <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>7.10.2</version>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
+  
 
   <build>
     <plugins>
