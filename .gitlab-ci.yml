@@ -71,7 +71,7 @@ healenium-tests:
 
     # Step 7: Dump DB state for next pipeline cache test
     - echo "💾 Dumping PostgreSQL database to backup.sql..."
-    - docker exec postgres-db pg_dump -U $POSTGRES_USER -d $POSTGRES_DB > db_dump/backup.sql
+    - docker exec postgres-db bash -c "pg_dump -U $POSTGRES_USER -d $POSTGRES_DB" > db_dump/backup.sql
 
     # Step 8: Stop services
     - cd infra
