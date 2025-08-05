@@ -26,24 +26,56 @@ healenium-tests:
     - dind
   before_script:
     - apt-get update
-    - apt-get install -y docker-compose chromium-driver
+    - apt-get install -y docker-compose chromium-driver postgresql-client
     - export CHROME_BIN=/usr/bin/chromium-browser
     - export CHROMEDRIVER_PATH=/usr/bin/chromedriver
+
   script:
-    # Start Healenium services
+    # Step 1: Start Healenium services
     - cd infra
     - docker-compose up -d
-    - sleep 10 # Wait for services to initialize
     - cd ..
-    # Run tests
-    - mvn clean test
+    - sleep 10 # wait for DB and services to initialize
 
-    # Stop services
+    # Step 2: Prepare dump folder
+    - mkdir -p db_dump
+
+    # Step 3: Restore DB if backup exists
+    - |
+      if [ -f db_dump/backup.sql ]; then
+        echo "🗃️ Restoring database from backup.sql..."
+        docker exec postgres-db bash -c "psql -U $POSTGRES_USER -d $POSTGRES_DB" < db_dump/backup.sql
+      else
+        echo "🚀 First run - no backup found. Starting fresh."
+      fi
+
+    # Step 4: Create schema/table and insert counter
+    - echo "🔧 Setting up schema and counter table..."
+    - docker exec postgres-db psql -U $POSTGRES_USER -d $POSTGRES_DB -c "CREATE SCHEMA IF NOT EXISTS healenium AUTHORIZATION $POSTGRES_USER;"
+    - docker exec postgres-db psql -U $POSTGRES_USER -d $POSTGRES_DB -c "CREATE TABLE IF NOT EXISTS healenium.run_counter (run_id SERIAL PRIMARY KEY, run_time TIMESTAMP DEFAULT now());"
+    - docker exec postgres-db psql -U $POSTGRES_USER -d $POSTGRES_DB -c "INSERT INTO healenium.run_counter DEFAULT VALUES;"
+
+    # Step 5: Log counter state
+    - echo "🟢 Total number of pipeline runs so far:"
+    - docker exec postgres-db psql -U $POSTGRES_USER -d $POSTGRES_DB -c "SELECT COUNT(*) AS total_runs FROM healenium.run_counter;"
+    - echo "🕒 Last 5 pipeline runs:"
+    - docker exec postgres-db psql -U $POSTGRES_USER -d $POSTGRES_DB -c "SELECT * FROM healenium.run_counter ORDER BY run_id DESC LIMIT 5;"
+
+    # Step 6: Run your actual Healenium tests
+    # - mvn clean test
+
+    # Step 7: Dump DB state for next pipeline
+    - echo "💾 Dumping PostgreSQL database to backup.sql..."
+    - docker exec postgres-db pg_dump -U $POSTGRES_USER -d $POSTGRES_DB > db_dump/backup.sql
+
+    # Step 8: Stop services
     - cd infra
     - docker-compose down
+
   artifacts:
     when: always
     paths:
       - target/surefire-reports/
       - healing.json
+      - db_dump/backup.sql
     expire_in: 1 week
