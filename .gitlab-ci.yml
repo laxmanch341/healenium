@@ -49,7 +49,7 @@ healenium-tests:
     - |
       if [ -f db_dump/backup.sql ]; then
         echo "🗃️ Restoring database from backup.sql..."
-        docker exec postgres-db bash -c "psql -U $POSTGRES_USER -d $POSTGRES_DB" < db_dump/backup.sql
+        cat db_dump/backup.sql | docker exec -i postgres-db psql -U $POSTGRES_USER -d $POSTGRES_DB
       else
         echo "🚀 First run - no backup found. Starting fresh."
       fi
