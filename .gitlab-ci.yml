@@ -1,6 +1,11 @@
 stages:
   - test
 
+cache:
+  key: db-backup
+  paths:
+    - db_dump/backup.sql
+
 variables:
   POSTGRES_DB: healenium
   POSTGRES_USER: healenium_user
