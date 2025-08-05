@@ -31,7 +31,7 @@ healenium-tests:
     - export CHROMEDRIVER_PATH=/usr/bin/chromedriver
 
   script:
-    # Step 1: Start Healenium services
+    # Step 1: Start Healenium service
     - cd infra
     - docker-compose up -d
     - cd ..
