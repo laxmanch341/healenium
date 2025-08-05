@@ -69,7 +69,7 @@ healenium-tests:
     # Step 6: Run your actual Healenium tests
     # - mvn clean test
 
-    # Step 7: Dump DB state for next pipeline
+    # Step 7: Dump DB state for next pipeline cache test
     - echo "💾 Dumping PostgreSQL database to backup.sql..."
     - docker exec postgres-db pg_dump -U $POSTGRES_USER -d $POSTGRES_DB > db_dump/backup.sql
 
