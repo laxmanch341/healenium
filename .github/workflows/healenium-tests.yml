@@ -44,7 +44,7 @@ jobs:
           cd ..
 
       - name: Wait for services
-        run: sleep 15
+        run: sleep 5
 
       - name: Restore database from backup
         run: |
