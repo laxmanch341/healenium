@@ -12,20 +12,6 @@ env:
 jobs:
   healenium-tests:
     runs-on: ubuntu-latest
-    services:
-      postgres-db:
-        image: postgres:13
-        env:
-          POSTGRES_DB: ${{ env.POSTGRES_DB }}
-          POSTGRES_USER: ${{ env.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
 
     steps:
       - name: Checkout code
@@ -37,7 +23,7 @@ jobs:
           java-version: "17"
           distribution: "temurin"
 
-      - name: Set up Docker Compose
+      - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y docker-compose chromium-driver postgresql-client
@@ -65,40 +51,39 @@ jobs:
           mkdir -p db_dump
           if [ -f db_dump/backup.sql ]; then
             echo "🗃️ Restoring database from backup.sql..."
-            psql -h localhost -U ${{ env.POSTGRES_USER }} -d ${{ env.POSTGRES_DB }} < db_dump/backup.sql
+            docker exec postgres-db bash -c "psql -U $POSTGRES_USER -d $POSTGRES_DB" < db_dump/backup.sql
           else
             echo "🚀 First run - no backup found. Starting fresh."
           fi
 
-      - name: Initialize database schema
+      - name: Initialize database schema and counter
         run: |
           echo "🔧 Setting up schema and counter table..."
-          psql -h localhost -U ${{ env.POSTGRES_USER }} -d ${{ env.POSTGRES_DB }} -c "CREATE SCHEMA IF NOT EXISTS healenium AUTHORIZATION ${{ env.POSTGRES_USER }};"
-          psql -h localhost -U ${{ env.POSTGRES_USER }} -d ${{ env.POSTGRES_DB }} -c "CREATE TABLE IF NOT EXISTS healenium.run_counter (run_id SERIAL PRIMARY KEY, run_time TIMESTAMP DEFAULT now());"
-          psql -h localhost -U ${{ env.POSTGRES_USER }} -d ${{ env.POSTGRES_DB }} -c "INSERT INTO healenium.run_counter DEFAULT VALUES;"
+          docker exec postgres-db psql -U $POSTGRES_USER -d $POSTGRES_DB -c "CREATE SCHEMA IF NOT EXISTS healenium AUTHORIZATION $POSTGRES_USER;"
+          docker exec postgres-db psql -U $POSTGRES_USER -d $POSTGRES_DB -c "CREATE TABLE IF NOT EXISTS healenium.run_counter (run_id SERIAL PRIMARY KEY, run_time TIMESTAMP DEFAULT now());"
+          docker exec postgres-db psql -U $POSTGRES_USER -d $POSTGRES_DB -c "INSERT INTO healenium.run_counter DEFAULT VALUES;"
 
       - name: Show run counter
         run: |
           echo "🟢 Total number of pipeline runs so far:"
-          psql -h localhost -U ${{ env.POSTGRES_USER }} -d ${{ env.POSTGRES_DB }} -c "SELECT COUNT(*) AS total_runs FROM healenium.run_counter;"
+          docker exec postgres-db psql -U $POSTGRES_USER -d $POSTGRES_DB -c "SELECT COUNT(*) AS total_runs FROM healenium.run_counter;"
           echo "🕒 Last 5 pipeline runs:"
-          psql -h localhost -U ${{ env.POSTGRES_USER }} -d ${{ env.POSTGRES_DB }} -c "SELECT * FROM healenium.run_counter ORDER BY run_id DESC LIMIT 5;"
+          docker exec postgres-db psql -U $POSTGRES_USER -d $POSTGRES_DB -c "SELECT * FROM healenium.run_counter ORDER BY run_id DESC LIMIT 5;"
 
       - name: Run tests
         run: |
-          # Uncomment to run actual tests
           # mvn clean test
           echo "✅ Tests would run here"
 
       - name: Dump database state
         run: |
           echo "💾 Dumping PostgreSQL database to backup.sql..."
-          pg_dump -h localhost -U ${{ env.POSTGRES_USER }} -d ${{ env.POSTGRES_DB }} > db_dump/backup.sql
+          docker exec postgres-db bash -c "pg_dump -U $POSTGRES_USER -d $POSTGRES_DB" > db_dump/backup.sql
 
       - name: Stop Healenium services
         run: |
           cd infra
-          docker compose down
+          docker-compose down
           cd ..
 
       - name: Upload test results
