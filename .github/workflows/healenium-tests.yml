@@ -16,9 +16,9 @@ jobs:
       postgres-db:
         image: postgres:13
         env:
-          POSTGRES_DB: healenium
-          POSTGRES_USER: healenium_user
-          POSTGRES_PASSWORD: YDk2nmNs4s9aCP6K
+          POSTGRES_DB: ${{ env.POSTGRES_DB }}
+          POSTGRES_USER: ${{ env.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
         ports:
           - 5432:5432
         options: >-
@@ -32,7 +32,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Java
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: "17"
           distribution: "temurin"
@@ -40,12 +40,12 @@ jobs:
       - name: Set up Docker Compose
         run: |
           sudo apt-get update
-          sudo apt-get install -y docker-compose chromium-driver postgresql-client
+          sudo apt-get install -y docker-compose-plugin chromium-driver postgresql-client
           export CHROME_BIN=/usr/bin/chromium-browser
           export CHROMEDRIVER_PATH=/usr/bin/chromedriver
 
       - name: Cache database backup
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: db-cache
         with:
           path: db_dump/backup.sql
@@ -54,7 +54,7 @@ jobs:
       - name: Start Healenium services
         run: |
           cd infra
-          docker-compose up -d
+          docker compose up -d
           cd ..
 
       - name: Wait for services
@@ -98,11 +98,11 @@ jobs:
       - name: Stop Healenium services
         run: |
           cd infra
-          docker-compose down
+          docker compose down
           cd ..
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: test-results
