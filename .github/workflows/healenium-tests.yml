@@ -35,7 +35,7 @@ jobs:
         id: db-cache
         with:
           path: db_dump/backup.sql
-          key: db-backup-${{ github.ref }}
+          key: db-backup
 
       - name: Start Healenium services
         run: |
