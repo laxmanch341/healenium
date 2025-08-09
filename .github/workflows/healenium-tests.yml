@@ -44,7 +44,7 @@ jobs:
           cd ..
 
       - name: Wait for services
-        run: sleep 4
+        run: sleep 3
 
       - name: Debug backup.sql before restore
         run: |
