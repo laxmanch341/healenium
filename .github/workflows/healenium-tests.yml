@@ -37,10 +37,17 @@ jobs:
           java-version: "17"
           distribution: "temurin"
 
-      - name: Set up Docker Compose
+      - name: Install Docker Compose
         run: |
           sudo apt-get update
-          sudo apt-get install -y docker-compose-plugin chromium-driver postgresql-client
+          sudo apt-get install -y docker.io
+          sudo curl -L "https://github.com/docker/compose/releases/download/v2.24.7/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+          docker-compose --version
+
+      - name: Install test dependencies
+        run: |
+          sudo apt-get install -y chromium-driver postgresql-client
           export CHROME_BIN=/usr/bin/chromium-browser
           export CHROMEDRIVER_PATH=/usr/bin/chromedriver
 
@@ -54,7 +61,7 @@ jobs:
       - name: Start Healenium services
         run: |
           cd infra
-          docker compose up -d
+          docker-compose up -d
           cd ..
 
       - name: Wait for services
@@ -98,7 +105,7 @@ jobs:
       - name: Stop Healenium services
         run: |
           cd infra
-          docker compose down
+          docker-compose down
           cd ..
 
       - name: Upload test results
