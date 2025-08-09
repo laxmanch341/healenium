@@ -81,7 +81,8 @@ jobs:
         run: |
           echo "🔧 Setting up schema and counter table..."
           docker exec postgres-db psql -U $POSTGRES_USER -d $POSTGRES_DB -c "CREATE SCHEMA IF NOT EXISTS healenium AUTHORIZATION $POSTGRES_USER;"
-          docker exec postgres-db psql -U $POSTGRES_USER -d $POSTGRES_DB -c "CREATE TABLE IF NOT EXISTS healenium.run_counter (run_id SERIAL PRIMARY KEY, run_time TIMESTAMP DEFAULT now(), marker TEXT);"
+          docker exec postgres-db psql -U $POSTGRES_USER -d $POSTGRES_DB -c "CREATE TABLE IF NOT EXISTS healenium.run_counter (run_id SERIAL PRIMARY KEY, run_time TIMESTAMP DEFAULT now());"
+          docker exec postgres-db psql -U $POSTGRES_USER -d $POSTGRES_DB -c "ALTER TABLE healenium.run_counter ADD COLUMN IF NOT EXISTS marker TEXT;"
           UNIQUE_MARKER="TEST-RUN-$(date +%s)"
           echo "🆕 Inserting marker: $UNIQUE_MARKER"
           docker exec postgres-db psql -U $POSTGRES_USER -d $POSTGRES_DB -c "INSERT INTO healenium.run_counter (marker) VALUES ('$UNIQUE_MARKER');"
