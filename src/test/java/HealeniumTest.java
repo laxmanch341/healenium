@@ -1,4 +1,4 @@
-package org.automationscripts;
+
 
 import org.testng.annotations.Test;
 import com.epam.healenium.SelfHealingDriver;
