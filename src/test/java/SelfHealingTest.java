@@ -1,7 +1,9 @@
-package org.automationscripts;
+
 
 import com.aventstack.extentreports.Status;
 import com.epam.healenium.SelfHealingDriver;
+
+import org.testng.annotations.Test;
 import org.modal.BaseTest;
 import org.modal.HealingCollector;
 import org.modal.HealingLogAppender;
@@ -10,14 +12,14 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.pages.HomePage;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+
 
 import java.time.Duration;
 
 public class SelfHealingTest extends BaseTest {
 
     @Test
-    public void TestWithHealenium(){
+    public void testWithHealenium(){
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--no-sandbox"); // Recommended for CI
 options.addArguments("--disable-dev-shm-usage"); // Recommended for Docker
@@ -37,8 +39,9 @@ options.addArguments("--window-size=1920,1080"); // Optional but helps
         homePage.enterMessage("this is my valid data");
         homePage.clickSubmit();
     }
-    @Test
-    public void TestWithHealenium1(){
+   @Test
+  
+    public void testWithHealenium1(){
 
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--no-sandbox"); // Recommended for CI
