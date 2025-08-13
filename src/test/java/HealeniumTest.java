@@ -19,6 +19,8 @@ public class HealeniumTest extends BaseTest {
     @Test
     public void interviewPortalTest(){
         ChromeOptions options = new ChromeOptions();
+        options.setBinary("/usr/bin/chromium-browser"); // match workflow install
+options.addArguments("--headless=new");
         options.addArguments("--no-sandbox"); // Recommended for CI
 options.addArguments("--disable-dev-shm-usage"); // Recommended for Docker
 options.addArguments("--disable-gpu"); // Optional, safer for CI

@@ -21,6 +21,8 @@ public class SelfHealingTest extends BaseTest {
     @Test
     public void testWithHealenium(){
         ChromeOptions options = new ChromeOptions();
+        options.setBinary("/usr/bin/chromium-browser"); // match workflow install
+options.addArguments("--headless=new");
         options.addArguments("--no-sandbox"); // Recommended for CI
 options.addArguments("--disable-dev-shm-usage"); // Recommended for Docker
 options.addArguments("--disable-gpu"); // Optional, safer for CI
@@ -44,6 +46,8 @@ options.addArguments("--window-size=1920,1080"); // Optional but helps
     public void testWithHealenium1(){
 
         ChromeOptions options = new ChromeOptions();
+        options.setBinary("/usr/bin/chromium-browser"); // match workflow install
+options.addArguments("--headless=new");
         options.addArguments("--no-sandbox"); // Recommended for CI
 options.addArguments("--disable-dev-shm-usage"); // Recommended for Docker
 options.addArguments("--disable-gpu"); // Optional, safer for CI
