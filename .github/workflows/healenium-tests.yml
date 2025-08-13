@@ -96,7 +96,7 @@ jobs:
 
       - name: Run tests
         run: |
-          # mvn clean test
+          mvn clean test
           echo "✅ Tests would run here"
 
       - name: Dump database state
